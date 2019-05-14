@@ -39,7 +39,7 @@ class TimezoneMiddleware(object):
     """
     def process_request(self, request):
         if request.user.is_authenticated():
-            profile = request.user.get_profile()
+            profile = request.user
             user_timezone = \
                 getattr(profile,
                         settings.VISITOR_INFO_PROFILE_TIMEZONE_FIELD,
@@ -52,7 +52,7 @@ class TimezoneMiddleware(object):
 
             try:
                 timezone.activate(user_timezone)
-            except Exception, e:
+            except Exception as e:
                 extra = {'_user': request.user, '_timezone': user_timezone}
                 logger.error('Invalid timezone selected: %s' % (str(e)),
                              extra=extra)
@@ -104,9 +104,9 @@ class VisitorInformationMiddleware(object):
             'unit_system': unit_system
         }
 
-        if request.user.is_authenticated() and request.user.get_profile():
+        if request.user and request.user.is_authenticated:
             # If user is logged in, add current settings
-            profile = request.user.get_profile()
+            profile = request.user
             user_timezone = \
                 getattr(profile,
                         settings.VISITOR_INFO_PROFILE_TIMEZONE_FIELD, None)
